@@ -11,7 +11,6 @@ un_plateau = Plateau(8)
 joueur_1 = Joueur(nom, un_plateau, 2)
 tour=1
 
-
 nom = input("Nom joueur 2 ?  ")
 un_autre_plateau = Plateau(8)
 joueur_2 = Joueur(nom, un_autre_plateau, 2)
