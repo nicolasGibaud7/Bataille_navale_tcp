@@ -34,5 +34,17 @@ def close_connection(sock, co_j1, co_j2):
     co_j2.close()
     sock.close()
 
+def info_joueur(sock, co_j):
+    # Demande de pseudo
+    msg_recv = co_j.recv(1024)
+    nom = msg_recv.decode()
+
+    print("Pseudo joueur : " + nom)
+
+    co_j.send(b"Ok cool")
+
+    return nom
+
 sock, co_j1, co_j2 = config_reseau()
+nom_j1 = info_joueur(sock, co_j1)
 close_connection(sock, co_j1, co_j2)
