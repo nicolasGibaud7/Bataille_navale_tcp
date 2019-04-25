@@ -1,6 +1,7 @@
 from plateau import *
 from bateau import *
 import os
+import pickle
 
 class Joueur:
     def __init__(self, nom, plateau, nb_bateau, co_j):
@@ -15,6 +16,8 @@ class Joueur:
             self.plateau.afficher()
             co_j.send(b"=== Positionnement bateau ===")
             co_j.recv(1)
+            plateau_b = pickle.dumps(self.plateau)
+            co_j.send(plateau_b)
             co_j.send(b"Sens ? (0 : Verticale - 1 : Horizontale ) : ")
             sens = co_j.recv(1).decode()
             co_j.send(b"Coordonnees du bateau ? ")
