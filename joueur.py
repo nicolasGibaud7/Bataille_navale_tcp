@@ -3,7 +3,7 @@ from bateau import *
 import os
 
 class Joueur:
-    def __init__(self, nom, plateau, nb_bateau):
+    def __init__(self, nom, plateau, nb_bateau, co_j):
         self.nom = nom
         self.plateau = plateau
         self.bateaux = []
@@ -13,29 +13,32 @@ class Joueur:
         while compteur < nb_bateau:
             test_bateau = False
             self.plateau.afficher()
-            print("=== Positionnement bateau", compteur+1, "===")
-            sens = input("Sens ? (0 : Verticale - 1 : Horizontale ) : ")
-            coordonnees = input("Coordonnées du bateau ? (Point le plus en haut à gauche du bateau -- ex : A4) : ")
+            co_j.send(b"=== Positionnement bateau ===")
+            co_j.recv(1)
+            co_j.send(b"Sens ? (0 : Verticale - 1 : Horizontale ) : ")
+            sens = co_j.recv(1).decode()
+            co_j.send(b"Coordonnees du bateau ? ")
+            coordonnees = co_j.recv(2).decode()
             x=alpha.index(coordonnees[0].lower())
             y=int(coordonnees[1])
             coordonnees_test=Coor(x,y)
             # Test si y a la place sur le plateau
             if ( x+1 > self.plateau.taille-2 and sens == '1') or (y > (self.plateau.taille-2) and sens == '0' ):
-                print("Pas la place")
+                co_j.send(b"Pas la place")
             else:
                 # Test si y a déjà un bateau à cet emplacement
                 for bateau in self.bateaux:
                     for case in bateau.cases:
                         if coordonnees_test.x== case.x and coordonnees_test.y == case.y:
-                            print("Erreur, il y a déjà un bateau ici")
+                            co_j.send(b"Erreur, il y a deja un bateau ici")
                             test_bateau=True
                     if test_bateau:
                         break
                 else:
                     self.bateaux.append(Bateau(3, int(sens), alpha.index(coordonnees[0].lower())+1, int(coordonnees[1])))
                     self.bateaux[compteur].afficher_infos()
+                    co_j.send(b"Succes : Bateau ajoute")
                     compteur += 1
-                    os.system("clear")
 
     def is_attacked(self, coordonnees, autre_joueur):
         for index, bateau in enumerate(self.bateaux):

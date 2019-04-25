@@ -1,4 +1,6 @@
 import socket
+from joueur import *
+
 
 def config_reseau():
     # Configuration réseau
@@ -48,5 +50,9 @@ def info_joueur(sock, co_j):
 
 sock, co_j1, co_j2 = config_reseau()
 nom_j1 = info_joueur(sock, co_j1)
+j1 = Joueur(nom_j1, Plateau(8), 2, co_j1)
 nom_j2 = info_joueur(sock, co_j2)
+j2 = Joueur(nom_j2, Plateau(8), 2, co_j2)
+
+
 close_connection(sock, co_j1, co_j2)
