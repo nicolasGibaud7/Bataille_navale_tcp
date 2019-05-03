@@ -1,6 +1,6 @@
 import socket
 from joueur import *
-
+import pickle
 
 def config_reseau():
     # Configuration réseau
@@ -48,11 +48,40 @@ def info_joueur(sock, co_j):
 
     return nom
 
+alpha = "abcdefghijklmnopqrstuvwxyz"
+
 sock, co_j1, co_j2 = config_reseau()
+
 nom_j1 = info_joueur(sock, co_j1)
 j1 = Joueur(nom_j1, Plateau(8), 2, co_j1)
+
 nom_j2 = info_joueur(sock, co_j2)
 j2 = Joueur(nom_j2, Plateau(8), 2, co_j2)
 
+tour = 0
+# Partie de bataille navale
+while j1.nb_bateau !=0 and j2.nb_bateau != 0:
+    if tour == 1:
+        print("J1")
+        plateau_b = pickle.dumps(j1.plateau)
+        co_j1.send(plateau_b)
+
+        attaque = co_j1.recv(1024) # Attaque
+        attaque = attaque.decode()
+        co_j1.send(b"a")
+        j2.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j1, co_j1, co_j2)
+        tour = 0
+
+    else:
+        print("J2")
+        plateau_b = pickle.dumps(j2.plateau)
+        co_j2.send(plateau_b)
+        co_j2.recv(5) # Ack
+
+        attaque = co_j2.recv(1024) # Attaque
+        attaque = attaque.decode()
+        co_j2.send(b"a")
+        j1.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j1, co_j2, co_j1)
+        tour = 1
 
 close_connection(sock, co_j1, co_j2)

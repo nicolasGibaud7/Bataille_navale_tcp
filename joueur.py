@@ -13,11 +13,12 @@ class Joueur:
         alpha = "abcdefghijklmnopqrstuvwxyz"
         while compteur < nb_bateau:
             test_bateau = False
-            self.plateau.afficher()
+            #self.plateau.afficher()
             co_j.send(b"=== Positionnement bateau ===")
             co_j.recv(1)
             plateau_b = pickle.dumps(self.plateau)
             co_j.send(plateau_b)
+            co_j.recv(1)
             co_j.send(b"Sens ? (0 : Verticale - 1 : Horizontale ) : ")
             sens = co_j.recv(1).decode()
             co_j.send(b"Coordonnees du bateau ? ")
@@ -41,26 +42,31 @@ class Joueur:
                     self.bateaux.append(Bateau(3, int(sens), alpha.index(coordonnees[0].lower())+1, int(coordonnees[1])))
                     self.bateaux[compteur].afficher_infos()
                     co_j.send(b"Succes : Bateau ajoute")
+                    co_j.recv(1)
                     compteur += 1
 
-    def is_attacked(self, coordonnees, autre_joueur):
+    def is_attacked(self, coordonnees, autre_joueur, co_j_att, co_j_is_att):
         for index, bateau in enumerate(self.bateaux):
             if bateau.test_case(coordonnees):
                 self.bateaux[index].vie -= 1  
-                print("Touché !")
                 autre_joueur.plateau.plateau[coordonnees.y] = autre_joueur.plateau.plateau[coordonnees.y][:coordonnees.x] + 'X' + autre_joueur.plateau.plateau[coordonnees.y][coordonnees.x+1:]
                 if self.bateaux[index].vie == 0:
                     self.nb_bateau -= 1
-                    print("Coulé !!!")
+                    co_j_att.send(b"ca touche et ca coule ")
+                    co_j_is_att.send(b"ca touche et ca coule, cest chaud")
+                else:
+                    co_j_att.send(b"ca touche ")
+                    co_j_is_att.send(b"ca touche attention")
                 break
         else:
-            print("Pas touché ...")
+            co_j_att.send(b"ca touche pas, dommage")
+            co_j_is_att.send(b"hop, tranquille, ca touche pas")
             autre_joueur.plateau.plateau[coordonnees.y] = autre_joueur.plateau.plateau[coordonnees.y][:coordonnees.x] + 'O' + autre_joueur.plateau.plateau[coordonnees.y][coordonnees.x+1:]
 
     def enregistrer_infos_joueurs(self, nom_fichier):
         with open(nom_fichier, 'a', encoding='utf-8') as mon_fichier:
             for bateau in self.bateaux :
                 ligne = ""
-                for case in bateau.cases:
+                for case in bateau.case:
                     ligne += str(case.x) + ' - ' + str(case.y) + '\n'
                 mon_fichier.write(ligne)
