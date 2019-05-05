@@ -68,20 +68,20 @@ while j1.nb_bateau !=0 and j2.nb_bateau != 0:
 
         attaque = co_j1.recv(1024) # Attaque
         attaque = attaque.decode()
-        co_j1.send(b"a")
         j2.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j1, co_j1, co_j2)
+        co_j2.recv(1) # ack fin de tour
         tour = 0
 
     else:
         print("J2")
         plateau_b = pickle.dumps(j2.plateau)
         co_j2.send(plateau_b)
-        co_j2.recv(5) # Ack
 
         attaque = co_j2.recv(1024) # Attaque
         attaque = attaque.decode()
-        co_j2.send(b"a")
+        print("Attaque :", attaque)
         j1.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j1, co_j2, co_j1)
+        co_j1.recv(1) # ack fin de tour
         tour = 1
 
 close_connection(sock, co_j1, co_j2)

@@ -56,7 +56,7 @@ class Joueur:
                     co_j_is_att.send(b"ca touche et ca coule, cest chaud")
                 else:
                     co_j_att.send(b"ca touche ")
-                    co_j_is_att.send(b"ca touche attention")
+                    co_j_is_att.send(b"ca touche attention ")
                 break
         else:
             co_j_att.send(b"ca touche pas, dommage")

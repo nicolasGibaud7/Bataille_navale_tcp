@@ -86,10 +86,9 @@ def attaque(sock, pseudo):
     # Récupération des coordonnées d'attaque
     attaque = input("{}, à quelle position se trouve votre attaque ? ".format(pseudo))
     sock.send(attaque.encode())
-    sock.recv(5)
 
     # Récupération du résultat de l'attaque
-    res_attq = sock.recv(1)
+    res_attq = sock.recv(1024)
     print(res_attq.decode())
 
     # Fin du tour
@@ -97,8 +96,9 @@ def attaque(sock, pseudo):
 def partie(sock, pseudo, etat_attaque):
     
     etat_partie = True
-
-    while etat_partie:     
+    
+    while etat_partie:
+        print("begin partie : etat attaque -->", etat_attaque)  
         if etat_attaque:
             attaque(sock, pseudo)
             etat_attaque = False
@@ -109,7 +109,6 @@ def partie(sock, pseudo, etat_attaque):
             sock.send(b"a")
             etat_attaque = True
 
-        
 
 sock, no_joueur = connection()
 
@@ -117,10 +116,10 @@ pseudo = info_joueur(sock)
 creation_joueur(sock)
 
 # wait autre joueur
-if not no_joueur:
-    sock.recv(1)
-else:
-    sock.send(b"a")
+#if not no_joueur: 
+    #sock.recv(1)
+#else:
+    #sock.send(b"a")
 
 if no_joueur:
     print("J2")
