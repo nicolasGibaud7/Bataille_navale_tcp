@@ -1,6 +1,7 @@
 import socket
 from joueur import *
 import pickle
+import time
 
 def config_reseau():
     # Configuration réseau
@@ -59,8 +60,13 @@ nom_j2 = info_joueur(sock, co_j2)
 j2 = Joueur(nom_j2, Plateau(8), 2, co_j2)
 
 tour = 0
+cpt_tour = 0
 # Partie de bataille navale
 while j1.nb_bateau !=0 and j2.nb_bateau != 0:
+    if cpt_tour:
+        co_j1.send(b"continue")
+        co_j2.send(b"continue")
+    
     if tour == 1:
         print("J1")
         plateau_b = pickle.dumps(j1.plateau)
@@ -83,5 +89,17 @@ while j1.nb_bateau !=0 and j2.nb_bateau != 0:
         j1.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j2, co_j2, co_j1)
         co_j1.recv(1) # ack fin de tour
         tour = 1
+    cpt_tour +=1
+    print(cpt_tour)
+co_j1.send(b"end")
+co_j2.send(b"end")
+
+time.sleep(1)
+if j1.nb_bateau:
+    co_j1.send(b"win")
+    co_j2.send(b"lose")
+else:
+    co_j1.send(b"lose")
+    co_j2.send(b"win")
 
 close_connection(sock, co_j1, co_j2)

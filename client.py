@@ -97,28 +97,23 @@ def partie(sock, pseudo, etat_attaque):
     
     etat_partie = True
     
-    while etat_partie:
-       # print("begin partie : etat attaque -->", etat_attaque)  
+    while etat_partie: 
         if etat_attaque:
             attaque(sock, pseudo)
             etat_attaque = False
-            #print("Etat attaque :", etat_attaque)
         else:
             res_attq = sock.recv(1024)
             print(res_attq.decode())
             sock.send(b"a")
             etat_attaque = True
+        msg_end = sock.recv(10)
+        if "end" in msg_end.decode():
+            etat_partie = False
 
 sock, no_joueur = connection()
 
 pseudo = info_joueur(sock)
 creation_joueur(sock)
-
-# wait autre joueur
-#if not no_joueur: 
-    #sock.recv(1)
-#else:
-    #sock.send(b"a")
 
 if no_joueur:
     print("J2")
@@ -126,3 +121,9 @@ else:
     print("J1")
 
 partie(sock, pseudo, no_joueur)
+etat_win = sock.recv(5)
+
+if "win" in etat_win.decode():
+    print("Bien joué, vous avez gagné !")
+else:
+    print("Dommage loser, c'est une défaite cuisante")
