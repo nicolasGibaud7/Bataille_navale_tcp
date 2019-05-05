@@ -79,8 +79,8 @@ while j1.nb_bateau !=0 and j2.nb_bateau != 0:
 
         attaque = co_j2.recv(1024) # Attaque
         attaque = attaque.decode()
-        print("Attaque :", attaque)
-        j1.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j1, co_j2, co_j1)
+        #print("Attaque :", attaque)
+        j1.is_attacked(Coor(alpha.index(attaque[0].lower())+1, int(attaque[1])), j2, co_j2, co_j1)
         co_j1.recv(1) # ack fin de tour
         tour = 1
 
