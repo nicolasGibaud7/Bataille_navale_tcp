@@ -124,6 +124,6 @@ partie(sock, pseudo, no_joueur)
 etat_win = sock.recv(5)
 
 if "win" in etat_win.decode():
-    print("Bien joué, vous avez gagné !")
+    print("Bien joué {}, vous avez gagné !".format(pseudo))
 else:
-    print("Dommage loser, c'est une défaite cuisante")
+    print("Dommage loser , c'est une défaite cuisante")
